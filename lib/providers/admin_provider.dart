@@ -13,7 +13,7 @@ class AdminProvider with ChangeNotifier {
 
   void getUserData() async {
     await db
-        .collection("officers")
+        .collection("users")
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get()
         .then(

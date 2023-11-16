@@ -133,8 +133,9 @@ class _AuthScreenState extends State<AuthScreen>
           'name': _nameController.text,
           'email': _emailController.text,
           'phoneNo': _phoneNoController.text,
-          'dist': selectedDist,
-          'state': selectedState,
+          'dist': selectedDist!.toLowerCase(),
+          'state': selectedState.toLowerCase(),
+          'role':'admin'
         });
       } on FirebaseAuthException catch (error) {
         if (error.code == 'email-already-in-use') {

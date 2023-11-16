@@ -24,10 +24,12 @@ class _HomePageScreenState extends State<HomePageScreen> {
   void setupPushNotification() async {
     final fcm = FirebaseMessaging.instance;
     await fcm.requestPermission();
+
     // notificationSettings.announcement;
     await fcm.getToken();
     fcm.subscribeToTopic('complaints');
   }
+
   @override
   void initState() {
     super.initState();
@@ -42,7 +44,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // var query = MediaQuery.of(context);
+    var query = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home Screen'),
@@ -75,30 +77,55 @@ class _HomePageScreenState extends State<HomePageScreen> {
           ? const Center(
               child: CircularProgressIndicator(),
             )
-          : Container(
-              margin: const EdgeInsets.symmetric(vertical: 200),
-              child: Center(
-                child: Column(
-                  children: [
-                    Row(
+          : Provider.of<AdminProvider>(context).adminModel!.role == 'citizen'
+              ? SizedBox(
+                  height: query.height,
+                  width: query.width,
+                  child: AlertDialog(
+                    title: const Text(
+                      'Invalid User',
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
+                    content: const Text('Do you want to logout?'),
+                    actions: [
+                      TextButton(onPressed: () {}, child: const Text('No')),
+                      TextButton(
+                          onPressed: () {
+                            Provider.of<AdminProvider>(context, listen: false)
+                                .logout();
+                          },
+                          child: const Text('Yes')),
+                    ],
+                  ),
+                )
+              : Container(
+                  height: query.height,
+                  width: query.width,
+                  margin: const EdgeInsets.symmetric(vertical: 200),
+                  child: Center(
+                    child: Column(
                       children: [
-                        ButtonWidget(
-                          imageString1,
-                          "Complaint Form",
-                          ListDetailsScreen.routeName,
-                        ),
-                        Column(
+                        Row(
                           children: [
-                            titleSection('Complaint Form',
-                                'An upcoming event is a\nplanned occurrence that\nis scheduled to take place\nin the near future'),
+                            ButtonWidget(
+                              imageString1,
+                              "Complaint Form",
+                              ListDetailsScreen.routeName,
+                            ),
+                            Column(
+                              children: [
+                                titleSection('Complaint Form',
+                                    'An upcoming event is a\nplanned occurrence that\nis scheduled to take place\nin the near future'),
+                              ],
+                            )
                           ],
                         )
                       ],
-                    )
-                  ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
     );
   }
 
