@@ -127,7 +127,7 @@ class _AuthScreenState extends State<AuthScreen>
           password: _passwordController.text,
         );
         FirebaseFirestore.instance
-            .collection('officers')
+            .collection('users')
             .doc(credential.user!.uid)
             .set({
           'name': _nameController.text,
