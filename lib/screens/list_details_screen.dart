@@ -59,79 +59,91 @@ class _ListDetailsScreenState extends State<ListDetailsScreen> {
           ? const Center(
               child: CircularProgressIndicator(),
             )
-          : Stack(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                      right: 20, left: 20, top: 150, bottom: 0),
-                  child: ListView.builder(
-                    itemBuilder: (ctx, i) => ComplaintCard(
-                      complaintData[i].id,
-                      complaintData[i].probName,
-                      complaintData[i].probDsc,
-                      complaintData[i].off,
-                      complaintData[i].subOff,
-                      complaintData[i].status,
-                    ),
-                    itemCount: complaintData.length,
-                  ),
-                ),
-                Stack(
-                  children: <Widget>[
-                    Column(
-                      children: [
-                        Container(
-                          height: MediaQuery.of(context).size.height * 0.035,
-                          color: const Color(0xffA0E9FF),
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height * 0.8,
-                          child: ClipPath(
-                            clipper: CurveClipper(),
-                            child: Container(
-                              //constraints: BoxConstraints.expand(),
-                              color: const Color(0xffA0E9FF),
+          : RefreshIndicator(
+              onRefresh: () async{
+                Provider.of<ComplaintProvider>(context, listen: false)
+                    .fetchComplaintData(context);
+              },
+              child: Stack(
+                children: [
+                  complaintData.isEmpty
+                      ? const Center(
+                          child: Text(
+                          'Their is no complaint in your district.',
+                          style: TextStyle(fontSize: 20),
+                        ))
+                      : Padding(
+                          padding: const EdgeInsets.only(
+                              right: 20, left: 20, top: 150, bottom: 0),
+                          child: ListView.builder(
+                            itemBuilder: (ctx, i) => ComplaintCard(
+                              complaintData[i].id,
+                              complaintData[i].probName,
+                              complaintData[i].probDsc,
+                              complaintData[i].off,
+                              complaintData[i].subOff,
+                              complaintData[i].status,
                             ),
+                            itemCount: complaintData.length,
                           ),
                         ),
-                      ],
-                    ),
-                    const SingleChildScrollView(
-                      child: Column(
+                  Stack(
+                    children: <Widget>[
+                      Column(
                         children: [
-                          SizedBox(height: 50.0),
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              // CircleAvatar(
-                              //   backgroundImage:
-                              //       AssetImage('assets/images/profileImg.png'),
-                              //   radius: 25.0,
-                              // ),
-                              SizedBox(
-                                width: 20.0,
+                          Container(
+                            height: MediaQuery.of(context).size.height * 0.035,
+                            color: const Color(0xffA0E9FF),
+                          ),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height * 0.8,
+                            child: ClipPath(
+                              clipper: CurveClipper(),
+                              child: Container(
+                                //constraints: BoxConstraints.expand(),
+                                color: const Color(0xffA0E9FF),
                               ),
-                              Padding(
-                                padding: EdgeInsets.all(16.0),
-                                child: Text(
-                                  'List Of Complaints',
-                                  style: TextStyle(
-                                    fontSize: 25.0,
-                                    fontFamily: 'Amaranth',
-                                  ),
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      const SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            SizedBox(height: 50.0),
+                            Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                // CircleAvatar(
+                                //   backgroundImage:
+                                //       AssetImage('assets/images/profileImg.png'),
+                                //   radius: 25.0,
+                                // ),
+                                SizedBox(
+                                  width: 20.0,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.all(16.0),
+                                  child: Text(
+                                    'List Of Complaints',
+                                    style: TextStyle(
+                                      fontSize: 25.0,
+                                      fontFamily: 'Amaranth',
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
     );
   }

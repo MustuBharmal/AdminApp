@@ -18,9 +18,7 @@ class ComplaintScreen extends StatefulWidget {
 
 class _ComplaintScreenState extends State<ComplaintScreen> {
   List<String> status = ['Pending', 'Ongoing', 'Resolved'];
-
-  String selectedStatus = 'Pending';
-
+  String? selectedStatus;
   @override
   Widget build(BuildContext context) {
     final passedId = ModalRoute.of(context)!.settings.arguments as String;
@@ -28,7 +26,8 @@ class _ComplaintScreenState extends State<ComplaintScreen> {
       context,
       listen: false,
     ).findById(passedId);
-    void updateFirestore(String newValue) async {
+    selectedStatus = loadedData.status;
+    Future<void> updateFirestore(String newValue) async {
       final CollectionReference itemsCollection = db.collection('complaints');
       await itemsCollection.doc(loadedData.id).set({
         'probName': loadedData.probName,
@@ -38,7 +37,7 @@ class _ComplaintScreenState extends State<ComplaintScreen> {
         'off': loadedData.off,
         'subOff': loadedData.subOff,
         'probDsc': loadedData.probDsc,
-        'status': selectedStatus.toLowerCase(),
+        'status': selectedStatus!.toLowerCase(),
         'userId': loadedData.userId,
         'imgUrl': loadedData.imgUrl,
         'complaintId': loadedData.complaintId,
@@ -110,15 +109,13 @@ class _ComplaintScreenState extends State<ComplaintScreen> {
                     (loadedData.status).toUpperCase(),
                     style: TextStyle(
                       fontSize: 16,
-                      color: loadedData.status == 'Rejected'
+                      color: loadedData.status == 'rejected'
                           ? Colors.red
-                          : loadedData.status == 'Solved'
+                          : loadedData.status == 'solved'
                               ? Colors.green
-                              : loadedData.status == 'In Progress'
-                                  ? Colors.blue
-                                  : loadedData.status == 'Passed'
-                                      ? Colors.cyan
-                                      : Colors.deepOrange,
+                              : loadedData.status == 'passed'
+                                  ? Colors.cyan
+                                  : Colors.deepOrange,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -130,20 +127,21 @@ class _ComplaintScreenState extends State<ComplaintScreen> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  FloatingActionButton(
-                    onPressed: () {
-                      Navigator.of(context).pushNamed(
-                        arguments: loadedData.id,
-                        InboxScreen.routeName,
-                      );
-                    },
-                    child: const Icon(Icons.messenger),
-                  ),
-                  if (loadedData.status == 'pending')
+                  if (loadedData.status != 'resolved')
+                    FloatingActionButton(
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(
+                          arguments: loadedData.id,
+                          InboxScreen.routeName,
+                        );
+                      },
+                      child: const Icon(Icons.messenger),
+                    ),
+                  if (loadedData.status != 'resolved')
                     DropdownButton(
-                      hint: const Text('Pending'),
+                      hint: Text(selectedStatus!.toUpperCase(),textAlign: TextAlign.right,),
                       isExpanded: true,
-                      value: selectedStatus,
+                      // value: selectedStatus,
                       items: status
                           .map(
                             (String status) => DropdownMenuItem(
@@ -155,7 +153,7 @@ class _ComplaintScreenState extends State<ComplaintScreen> {
                       onChanged: (String? value) {
                         setState(() {
                           selectedStatus = value!;
-                          updateFirestore(selectedStatus);
+                          updateFirestore(selectedStatus!);
                         });
                       },
                     ),

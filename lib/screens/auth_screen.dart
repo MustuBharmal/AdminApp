@@ -38,6 +38,7 @@ class _AuthScreenState extends State<AuthScreen>
   String selectedState = '';
   String? selectedDist;
   List<StateModel> states = [];
+  bool isObscure = true;
 
   @override
   void initState() {
@@ -51,11 +52,11 @@ class _AuthScreenState extends State<AuthScreen>
     _heightAnimation = Tween<Size>(
       begin: const Size(
         double.infinity,
-        430,
+        480,
       ),
       end: const Size(
         double.infinity,
-        260,
+        500,
       ),
     ).animate(
       CurvedAnimation(
@@ -122,7 +123,7 @@ class _AuthScreenState extends State<AuthScreen>
     } else {
       try {
         final credential =
-            await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text,
           password: _passwordController.text,
         );
@@ -135,7 +136,7 @@ class _AuthScreenState extends State<AuthScreen>
           'phoneNo': _phoneNoController.text,
           'dist': selectedDist!.toLowerCase(),
           'state': selectedState.toLowerCase(),
-          'role':'admin'
+          'role': 'admin'
         });
       } on FirebaseAuthException catch (error) {
         if (error.code == 'email-already-in-use') {
@@ -156,6 +157,9 @@ class _AuthScreenState extends State<AuthScreen>
 
   @override
   Widget build(BuildContext context) {
+    var deviceSize = MediaQuery
+        .of(context)
+        .size;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
@@ -188,7 +192,9 @@ class _AuthScreenState extends State<AuthScreen>
   }
 
   Widget signInForm() {
-    final deviceSize = MediaQuery.of(context).size;
+    final deviceSize = MediaQuery
+        .of(context)
+        .size;
     return Card(
       color: const Color(0xffE0F4FF),
       shape: RoundedRectangleBorder(
@@ -197,41 +203,47 @@ class _AuthScreenState extends State<AuthScreen>
       elevation: 8.0,
       child: AnimatedBuilder(
         animation: _heightAnimation,
-        builder: (ctx, ch) => Container(
-          height: _heightAnimation.value.height,
-          constraints: BoxConstraints(minHeight: _heightAnimation.value.height),
-          width: deviceSize.width * 0.9,
-          padding: const EdgeInsets.all(16.0),
-          child: ch,
-        ),
-        child: Form(
-          key: _key,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                const SizedBox(height: 40),
-                emailTextField(),
-                const SizedBox(height: 20),
-                passwordTextField(),
-                const SizedBox(height: 20),
-                if (_isLoading)
-                  const CircularProgressIndicator()
-                else
-                  submitButton(),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _user = AuthUser.signUp;
-                    });
-                  },
-                  child: const Text("Create Account"),
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: const Text('Forgot your password?'),
-                ),
-              ],
+        builder: (ctx, ch) =>
+            Container(
+              height: _heightAnimation.value.height,
+              constraints: BoxConstraints(
+                  minHeight: _heightAnimation.value.height),
+              width: deviceSize.width * 0.9,
+              padding: const EdgeInsets.all(16.0),
+              child: ch,
+            ),
+        child: SizedBox(
+          width: deviceSize.width,
+          height: deviceSize.height,
+          child: Form(
+            key: _key,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 40),
+                  emailTextField(),
+                  const SizedBox(height: 20),
+                  passwordTextField(),
+                  const SizedBox(height: 20),
+                  if (_isLoading)
+                    const CircularProgressIndicator()
+                  else
+                    submitButton(),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _user = AuthUser.signUp;
+                      });
+                    },
+                    child: const Text("Create Account"),
+                  ),
+                  TextButton(
+                    onPressed: () {},
+                    child: const Text('Forgot your password?'),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -404,13 +416,15 @@ class _AuthScreenState extends State<AuthScreen>
               return null;
             },
             controller: _passwordController,
-            obscureText: true,
+            obscureText: isObscure,
             decoration: InputDecoration(
               suffixIcon: IconButton(
                   onPressed: () {
-                    _passwordController.clear();
+                    setState(() {
+                      isObscure = !isObscure;
+                    });
                   },
-                  icon: const Icon(Icons.cancel)),
+                  icon:   Icon(isObscure ? Icons.visibility : Icons.visibility_off)),
               label: const Text("Password"),
               hintText: "Enter the password",
               border: OutlineInputBorder(
@@ -444,11 +458,12 @@ class _AuthScreenState extends State<AuthScreen>
             },
             items: states
                 .map(
-                  (state) => DropdownMenuItem<String>(
+                  (state) =>
+                  DropdownMenuItem<String>(
                     value: state.name,
                     child: Text(state.name),
                   ),
-                )
+            )
                 .toList(),
           ),
         ),
@@ -472,15 +487,16 @@ class _AuthScreenState extends State<AuthScreen>
             items: selectedState == ''
                 ? []
                 : states
-                    .firstWhere((state) => state.name == selectedState)
-                    .dist
-                    .map(
-                      (district) => DropdownMenuItem<String>(
-                        value: district,
-                        child: Text(district),
-                      ),
-                    )
-                    .toList(),
+                .firstWhere((state) => state.name == selectedState)
+                .dist
+                .map(
+                  (district) =>
+                  DropdownMenuItem<String>(
+                    value: district,
+                    child: Text(district),
+                  ),
+            )
+                .toList(),
             onChanged: (value) {
               setState(() {
                 selectedDist = value!;
@@ -493,16 +509,19 @@ class _AuthScreenState extends State<AuthScreen>
   }
 
   Widget submitButton() {
+
+
     return ElevatedButton(
       style: ButtonStyle(
-        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(21),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(21),
+            ),
           ),
-        ),
+
       ),
       onPressed: _submit,
-      child: Text(_user == AuthUser.signIn ? 'LogIn' : 'SignUp'),
+      child: Text(_user == AuthUser.signIn ? 'Login' : 'Signup'),
     );
   }
 

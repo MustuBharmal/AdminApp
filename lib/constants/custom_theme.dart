@@ -2,7 +2,9 @@
 import 'package:flutter/material.dart';
 
 import 'global_variables.dart';
-
+Color getColor(Set<MaterialState> states) {
+  return Colors.black;
+}
 final ThemeData customTheme = ThemeData(
   colorScheme: const ColorScheme.light(
     primary: primaryColor,
@@ -16,10 +18,10 @@ final ThemeData customTheme = ThemeData(
     color: Color(0xffA0E9FF),
   ),
   textTheme:  const TextTheme(
-    headlineSmall: TextStyle(color: Colors.white),
-    titleLarge: TextStyle(color: Colors.white),
+    headlineSmall: TextStyle(color: Colors.black),
+    titleLarge: TextStyle(color: Colors.black),
     bodyMedium: TextStyle(color: Colors.black),
-    labelLarge: TextStyle(color: Colors.white),
+    labelLarge: TextStyle(color: Colors.black),
   ),
   textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(foregroundColor: Colors.black),),
   elevatedButtonTheme: ElevatedButtonThemeData(
@@ -32,6 +34,8 @@ final ThemeData customTheme = ThemeData(
           borderRadius: BorderRadius.circular(20.0),
         ),
       ),
+        foregroundColor: MaterialStateProperty.resolveWith(getColor),
+      backgroundColor: MaterialStateProperty.all(const Color(0xffA0E9FF)),
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(
@@ -55,6 +59,6 @@ final ThemeData customTheme = ThemeData(
 // fillColor: Colors.grey.withOpacity(0.1),
 abstract class ThemeStyles {
   static ButtonStyle whiteTextButtonStyle = ButtonStyle(
-    foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+    foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
   );
 }
