@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:admin/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +11,7 @@ import '../models/states_dist_model.dart';
 
 class AdminProvider with ChangeNotifier {
   AdminModel? adminModel;
+  UsersModel? userModel;
 
   void getUserData() async {
     await db
@@ -20,6 +22,18 @@ class AdminProvider with ChangeNotifier {
       (querySnapshot) {
         if (querySnapshot.data() != null) {
           adminModel = AdminModel.fromJson(querySnapshot.data()!);
+        }
+      },
+      onError: (e) => print("Error completing: $e"),
+    );
+    notifyListeners();
+  }
+
+  Future<void> fetchCitizenData(String uid) async {
+    await db.collection('complaints').doc(uid).get().then(
+      (querySnapshot) {
+        if (querySnapshot.data() != null) {
+          userModel = UsersModel.fromJson(querySnapshot.data()!);
         }
       },
       onError: (e) => print("Error completing: $e"),

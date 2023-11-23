@@ -2,7 +2,7 @@ import 'package:admin/providers/admin_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../screens/list_details_screen.dart';
+import '../screens/all_citizen_complaints.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -41,7 +41,7 @@ class AppDrawer extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).pushNamed(
                     arguments: 'pending',
-                    ListDetailsScreen.routeName,
+                    CitizenComplaintsScreen.routeName,
                   );
                 },
               ),
@@ -64,7 +64,7 @@ class AppDrawer extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).pushNamed(
                     arguments: 'resolved',
-                    ListDetailsScreen.routeName,
+                    CitizenComplaintsScreen.routeName,
                   );
                 },
               ),

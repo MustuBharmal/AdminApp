@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../widgets/app_drawer.dart';
 import '../widgets/button_widget.dart';
-import 'list_details_screen.dart';
+import 'all_citizen_complaints.dart';
 
 var imageString1 = "assets/images/notification_1.png";
 
@@ -112,7 +112,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                             ButtonWidget(
                               imageString1,
                               "Complaint Form",
-                              ListDetailsScreen.routeName,
+                              CitizenComplaintsScreen.routeName,
                             ),
                             Column(
                               children: [

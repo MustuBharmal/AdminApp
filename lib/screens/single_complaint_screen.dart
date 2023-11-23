@@ -1,19 +1,32 @@
-
-import 'package:admin/providers/admin_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../constants/colors.dart';
 import '../constants/global_variables.dart';
+import '../providers/admin_provider.dart';
 import '../providers/complaint_provider.dart';
 import 'inbox_screen.dart';
 
-class ComplaintScreen extends StatelessWidget {
-  const ComplaintScreen({super.key});
+class SingleComplaintScreen extends StatefulWidget {
+  static const String routeName = '/single-complaint-screen';
+  // final String uid;
+  // const SingleComplaintScreen({super.key, required this.uid});
+  @override
+  State<SingleComplaintScreen> createState() => _SingleComplaintScreenState();
+}
 
-  static const String routeName = '/complaint-screen';
-
+class _SingleComplaintScreenState extends State<SingleComplaintScreen> {
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   Future.delayed(Duration.zero).then(
+  //         (_) => Provider.of<AdminProvider>(
+  //       context,
+  //       listen: false,
+  //     ).fetchCitizenData(),
+  //   );
+  // }
   @override
   Widget build(BuildContext context) {
     var deviceSize = MediaQuery.of(context).size;
@@ -22,6 +35,9 @@ class ComplaintScreen extends StatelessWidget {
       context,
       listen: false,
     ).findById(passedId);
+    String? passing(String uid){
+      return loadedData.userId;
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Complaint Details'),
@@ -92,12 +108,12 @@ class ComplaintScreen extends StatelessWidget {
                               color: loadedData.status == 'Rejected'
                                   ? Colors.red
                                   : loadedData.status == 'Solved'
-                                      ? Colors.green
-                                      : loadedData.status == 'In Progress'
-                                          ? Colors.blue
-                                          : loadedData.status == 'Passed'
-                                              ? Colors.cyan
-                                              : Colors.deepOrange,
+                                  ? Colors.green
+                                  : loadedData.status == 'In Progress'
+                                  ? Colors.blue
+                                  : loadedData.status == 'Passed'
+                                  ? Colors.cyan
+                                  : Colors.deepOrange,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

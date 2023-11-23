@@ -47,8 +47,8 @@ class _InboxScreenState extends State<InboxScreen> {
     final passedId = ModalRoute.of(context)!.settings.arguments as String;
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            'Private Chat with ${Provider.of<AdminProvider>(context).adminModel!.name!}'),
+        title: const Text(
+            'Private Chat'),
       ),
       body: Column(
         children: [

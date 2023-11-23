@@ -1,3 +1,4 @@
+import "package:admin/screens/home_screen.dart";
 import "package:firebase_auth/firebase_auth.dart";
 import "package:firebase_core/firebase_core.dart";
 import "package:flutter/material.dart";
@@ -51,7 +52,7 @@ class _MyAppState extends State<MyApp> {
               return const SplashScreen();
             }
             if (snapshot.hasData) {
-              return const HomePageScreen();
+              return const HomeScreen();
             } else {
               return const AuthScreen();
             }

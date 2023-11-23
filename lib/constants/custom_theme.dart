@@ -1,41 +1,41 @@
-
 import 'package:flutter/material.dart';
-
+import 'colors.dart';
 import 'global_variables.dart';
+
 Color getColor(Set<MaterialState> states) {
   return Colors.black;
 }
 final ThemeData customTheme = ThemeData(
   colorScheme: const ColorScheme.light(
-    primary: primaryColor,
-    secondary: bgColor,
+    primary: ThemeColor.primary,
+    secondary: ThemeColor.secondary,
   ),
-  scaffoldBackgroundColor: scaffoldBackgroundColor,
-  appBarTheme: const AppBarTheme(
+  scaffoldBackgroundColor: ThemeColor.scaffoldBgColor,
+  appBarTheme: AppBarTheme(
     elevation: 0,
-    iconTheme: IconThemeData(color: Colors.black),
+    iconTheme: const IconThemeData(color: Colors.white),
     foregroundColor: Colors.black,
-    color: Color(0xffA0E9FF),
+    backgroundColor: ThemeColor.primary,
+    titleTextStyle: titleTextStyle,
   ),
   textTheme:  const TextTheme(
-    headlineSmall: TextStyle(color: Colors.black),
-    titleLarge: TextStyle(color: Colors.black),
-    bodyMedium: TextStyle(color: Colors.black),
-    labelLarge: TextStyle(color: Colors.black),
+    headlineLarge: headerStyle,
+    titleLarge: titleStyle,
+    titleMedium: subtitleStyle,
   ),
   textButtonTheme: TextButtonThemeData(style: TextButton.styleFrom(foregroundColor: Colors.black),),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
       padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-        const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
       ),
       shape: MaterialStateProperty.all<OutlinedBorder>(
         RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0),
+          borderRadius: BorderRadius.circular(22.0),
         ),
       ),
-        foregroundColor: MaterialStateProperty.resolveWith(getColor),
-      backgroundColor: MaterialStateProperty.all(const Color(0xffA0E9FF)),
+      foregroundColor: MaterialStateProperty.all(Colors.white),
+      backgroundColor: MaterialStateProperty.all(const Color(0xFF698DC5)),
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(

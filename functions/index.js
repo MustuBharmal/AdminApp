@@ -14,7 +14,7 @@ exports.myFunction = functions.firestore
       notification: {
         title: snapshot.data()["probName"],
         body: snapshot.data()["subOff"],
-        clickAction: "NEW_COMPLAINT_NOTIFICATION",
+        clickAction: "NEW_COMPLAINTS",
       },
     });
   });

@@ -1,8 +1,8 @@
-import 'package:admin/screens/list_details_screen.dart';
+import 'package:admin/screens/all_citizen_complaints.dart';
 import 'package:flutter/material.dart';
 
 import '../screens/auth_screen.dart';
-import '../screens/complaint_screen.dart';
+import '../screens/citizen_complaint_screen.dart';
 import '../screens/homepage_screen.dart';
 import '../screens/inbox_screen.dart';
 import '../screens/profile_screen.dart';
@@ -20,10 +20,10 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
         settings: routeSettings,
         builder: (_) => const HomePageScreen(),
       );
-    case ListDetailsScreen.routeName:
+    case CitizenComplaintsScreen.routeName:
       return MaterialPageRoute(
         settings: routeSettings,
-        builder: (_) => const ListDetailsScreen(),
+        builder: (_) => const CitizenComplaintsScreen(),
       );
     case ProfileScreen.routeName:
       return MaterialPageRoute(
