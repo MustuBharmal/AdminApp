@@ -1,6 +1,7 @@
 import 'package:admin/constants/global_variables.dart';
 import 'package:admin/providers/admin_provider.dart';
 import 'package:admin/screens/all_citizen_complaints.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
@@ -102,8 +103,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 30,
                       ),
                       Container(
-                        width: double.infinity,
-                        height: 145,
+                        width: deviceSize.width,
+                        height: deviceSize.height / 4.5,
                         decoration: BoxDecoration(
                           boxShadow: const [
                             BoxShadow(
@@ -116,86 +117,106 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: ThemeColor.primary,
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.all(20),
+                          padding: const EdgeInsets.only(
+                              right: 20,left: 20),
                           child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Flexible(
-                                child: SizedBox(
-                                  width: (deviceSize.width),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text(
-                                        "Departments",
-                                        style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            color: ThemeColor.white),
-                                      ),
-                                      const Text(
-                                        "Sub-Offices",
-                                        style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w400,
-                                            color: ThemeColor.white),
-                                      ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          // Navigator.pushNamed(
-                                          //     context, Department.routeName);
-                                        },
-                                        child: Container(
-                                          width: deviceSize.width / 3,
-                                          height: deviceSize.height / 18,
-                                          decoration: BoxDecoration(
-                                              color: ThemeColor.secondary,
-                                              borderRadius:
-                                                  BorderRadius.circular(20)),
-                                          child: const Center(
-                                            child: Text(
-                                              "View Departments",
-                                              style: TextStyle(
-                                                  fontSize: 13,
+                              Column(
+                                children: [
+                                  Container(
+                                    width: deviceSize.width / 3.5,
+                                    height: deviceSize.height/5.5,
+                                    decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: ThemeColor.secondary),
+                                    child: Center(
+                                      child: StreamBuilder(
+                                        stream: FirebaseFirestore.instance
+                                            .collection('complaints')
+                                            .where(
+                                              'dist',
+                                              isEqualTo:
+                                                  Provider.of<AdminProvider>(
+                                                          context)
+                                                      .adminModel!
+                                                      .dist,
+                                            )
+                                            .where('status', whereIn: [
+                                          'pending',
+                                        ]).snapshots(),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot passed) {
+                                          if (passed.hasData) {
+                                            return Text(
+                                              passed.data!.docs.length
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 28,
+                                                  fontWeight: FontWeight.bold,
                                                   color: ThemeColor.white),
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    ],
+                                            );
+                                          } else {
+                                            return const CircularProgressIndicator();
+                                          }
+                                        },
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 20,
-                              ),
-                              Container(
-                                width: 100,
-                                height: 100,
-                                decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: ThemeColor.secondary),
-                                child: Center(
-                                  child: FutureBuilder(
-                                    future: getNumberOfUsers(),
-                                    builder: (BuildContext context,
-                                        AsyncSnapshot snapshot) {
-                                      if (snapshot.hasData) {
-                                        return Text(
-                                          snapshot.data,
-                                          style: const TextStyle(
-                                              fontSize: 28,
-                                              fontWeight: FontWeight.bold,
-                                              color: ThemeColor.white),
-                                        );
-                                      } else {
-                                        return const CircularProgressIndicator();
-                                      }
-                                    },
+                                  const Text(
+                                    'Pending Complaint',
+                                    style: TextStyle(color: Colors.white),
                                   ),
-                                ),
+                                ],
+                              ),
+                              const SizedBox(width: 20,),
+                              Column(
+                                children: [
+                                  Container(
+                                    width: deviceSize.width / 3.5,
+                                    height: deviceSize.height/5.5,
+                                    decoration: const BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: ThemeColor.secondary),
+                                    child: Center(
+                                      child: StreamBuilder(
+                                        stream: FirebaseFirestore.instance
+                                            .collection('complaints')
+                                            .where(
+                                          'dist',
+                                          isEqualTo:
+                                          Provider.of<AdminProvider>(
+                                              context)
+                                              .adminModel!
+                                              .dist,
+                                        )
+                                            .where('status', whereIn: [
+                                          'resolved',
+                                        ]).snapshots(),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot passed) {
+                                          if (passed.hasData) {
+                                            return Text(
+                                              passed.data!.docs.length
+                                                  .toString(),
+                                              style: const TextStyle(
+                                                  fontSize: 28,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: ThemeColor.white),
+                                            );
+                                          } else {
+                                            return const CircularProgressIndicator();
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  const Text(
+                                    'Resolved Complaint',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -220,7 +241,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("Complaints",style: titleStyle,),
+                            Text(
+                              "Complaints",
+                              style: titleStyle,
+                            ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -353,7 +377,10 @@ class _HomeScreenState extends State<HomeScreen> {
               size: deviceSize.width / 12,
             ),
           ),
-          Text(status,style: normalStyle,),
+          Text(
+            status,
+            style: normalStyle,
+          ),
         ],
       ),
     );
