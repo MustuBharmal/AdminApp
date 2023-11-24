@@ -1,142 +1,168 @@
-
 import 'package:admin/providers/admin_provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../constants/colors.dart';
 import '../constants/global_variables.dart';
 import '../providers/complaint_provider.dart';
 import 'inbox_screen.dart';
 
-class ComplaintScreen extends StatelessWidget {
+class ComplaintScreen extends StatefulWidget {
+  static const String routeName = '/complaint-screen';
+
   const ComplaintScreen({super.key});
 
-  static const String routeName = '/complaint-screen';
+  @override
+  State<ComplaintScreen> createState() => _ComplaintScreenState();
+}
+
+class _ComplaintScreenState extends State<ComplaintScreen> {
+  List<String> status = ['Pending', 'Ongoing', 'Resolved'];
+
+  String selectedStatus = 'Pending';
 
   @override
   Widget build(BuildContext context) {
-    var deviceSize = MediaQuery.of(context).size;
     final passedId = ModalRoute.of(context)!.settings.arguments as String;
     final loadedData = Provider.of<ComplaintProvider>(
       context,
       listen: false,
     ).findById(passedId);
+    void updateFirestore(String newValue) async {
+      final CollectionReference itemsCollection = db.collection('complaints');
+      await itemsCollection.doc(loadedData.id).set({
+        'probName': loadedData.probName,
+        'state': loadedData.state,
+        'dist': loadedData.dist,
+        'city': loadedData.city,
+        'off': loadedData.off,
+        'subOff': loadedData.subOff,
+        'probDsc': loadedData.probDsc,
+        'status': selectedStatus.toLowerCase(),
+        'userId': loadedData.userId,
+        'imgUrl': loadedData.imgUrl,
+        'complaintId': loadedData.complaintId,
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Complaint Details'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(18.0),
-        child: Container(
-          width: (deviceSize.width),
-          decoration: BoxDecoration(boxShadow: const [
-            BoxShadow(
-              color: ThemeColor.shadow,
-              blurRadius: 10,
-              spreadRadius: 0.1,
-              offset: Offset(0, 10),
-            )
-          ], color: ThemeColor.white, borderRadius: BorderRadius.circular(10)),
-          padding: const EdgeInsets.only(bottom: 25,top: 10, right: 20,left: 20),
-          child: Wrap(
-            children: [
-              // Positioned(right: 10.0,child: Text('9th November')),
-              Container(alignment: Alignment.topRight,child:  Text(DateFormat.yMMMMd().format(loadedData.createdAt.toDate()))),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Center(
-                    child: Text(
-                      loadedData.probName,
-                      overflow: TextOverflow.clip,
-                      style: const TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                      ),
+      body: Container(
+        padding: const EdgeInsets.all(20),
+        child: Wrap(
+          children: <Widget>[
+            Text(
+              loadedData.probName,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(
+              height: 30,
+            ),
+            Row(
+              children: <Widget>[
+                const Text(
+                  'Posted by ',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 16),
+                ),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: Text(
+                    (Provider.of<AdminProvider>(context).adminModel!.name!)
+                        .toUpperCase(),
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(
-                    height: 15,
+                ),
+              ],
+            ),
+            const SizedBox(height: 30),
+            Row(
+              children: <Widget>[
+                Flexible(
+                  child: Text(
+                    loadedData.probDsc,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 3,
+                    style: const TextStyle(
+                      fontSize: 15,
+                    ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      const Text("About :- ", style: headerStyle),
-                      Text(
-                        loadedData.probDsc,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 3,
-                        style: subtitleStyle,
+                )
+              ],
+            ),
+            const SizedBox(height: 30),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    (loadedData.status).toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: loadedData.status == 'Rejected'
+                          ? Colors.red
+                          : loadedData.status == 'Solved'
+                          ? Colors.green
+                          : loadedData.status == 'In Progress'
+                          ? Colors.blue
+                          : loadedData.status == 'Passed'
+                          ? Colors.cyan
+                          : Colors.deepOrange,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Text(
+                    'Status',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 13,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  FloatingActionButton(
+                    onPressed: () {
+                      Navigator.of(context).pushNamed(
+                        arguments: loadedData.id,
+                        InboxScreen.routeName,
+                      );
+                    },
+                    child: const Icon(Icons.messenger),
+                  ),
+                  if (loadedData.status == 'pending')
+                    DropdownButton(
+                      hint: const Text('Pending'),
+                      isExpanded: true,
+                      value: loadedData.status,
+                      items: status
+                          .map(
+                            (String status) => DropdownMenuItem(
+                          value: status,
+                          child: Text(status),
+                        ),
                       )
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Row(
-                        children: [
-                          const Text(
-                            'Status :- ',
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
-                          Text(
-                            (loadedData.status).toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: loadedData.status == 'Rejected'
-                                  ? Colors.red
-                                  : loadedData.status == 'Solved'
-                                      ? Colors.green
-                                      : loadedData.status == 'In Progress'
-                                          ? Colors.blue
-                                          : loadedData.status == 'Passed'
-                                              ? Colors.cyan
-                                              : Colors.deepOrange,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20 ,),
-                  Row(
-                    children: [
-                      FloatingActionButton(
-                        onPressed: () {
-                          Navigator.of(context).pushNamed(
-                            InboxScreen.routeName,
-                            arguments: loadedData.id,
-                          );
-                        },
-                        child: const Icon(Icons.messenger),
-                      ),
-                      const SizedBox(width: 50,),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: ThemeColor.lightGrey,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8.0),
-                        child: Text(
-                          'Posted by :- ${(Provider.of<AdminProvider>(context).userModel!.name!).toUpperCase()}',
-                          overflow: TextOverflow.clip,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ],
-                  ),
+                          .toList(),
+                      onChanged: (String? value) {
+                        setState(() {
+                          loadedData.status = value!;
+                          updateFirestore(loadedData.status);
+                        });
+                      },
+                    ),
                 ],
               ),
-            ],
-          ),
+            )
+          ],
         ),
       ),
     );

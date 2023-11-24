@@ -1,4 +1,4 @@
-
+import 'package:admin/constants/global_variables.dart';
 import 'package:admin/providers/admin_provider.dart';
 import 'package:admin/screens/all_citizen_complaints.dart';
 import 'package:flutter/material.dart';
@@ -36,15 +36,16 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero).then(
-        (_) => Provider.of<AdminProvider>(context, listen: false).getUserData());
+    Future.delayed(Duration.zero).then((_) =>
+        Provider.of<AdminProvider>(context, listen: false).getUserData());
   }
-
 
   @override
   Widget build(BuildContext context) {
     var deviceSize = MediaQuery.of(context).size;
     return Scaffold(
+      // appBar: AppBar(),
+      // drawer: const AppDrawer(),
       body: Provider.of<AdminProvider>(context).adminModel == null
           ? const Center(child: CircularProgressIndicator())
           : SafeArea(
@@ -60,9 +61,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                               const Text(
+                              const Text(
                                 "Welcome,",
-                                style:TextStyle(
+                                style: TextStyle(
                                     fontSize: 14, color: Colors.black),
                               ),
                               const SizedBox(
@@ -204,8 +205,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 30,
                       ),
                       Container(
+                        height: 150,
                         width: double.infinity,
-                        height: 60,
                         decoration: BoxDecoration(
                             boxShadow: const [
                               BoxShadow(
@@ -216,85 +217,19 @@ class _HomeScreenState extends State<HomeScreen> {
                             ],
                             color: ThemeColor.white,
                             borderRadius: BorderRadius.circular(20)),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 20, right: 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "Register Complaint",
-                                style: TextStyle(
-                                    fontSize: 17,
-                                    color: ThemeColor.black,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  // Navigator.pushNamed(
-                                  //     context, AddComplaints.routeName);
-                                },
-                                child: Container(
-                                  width: 70,
-                                  height: 35,
-                                  decoration: BoxDecoration(
-                                      color: ThemeColor.secondary,
-                                      borderRadius: BorderRadius.circular(20)),
-                                  child: const Center(
-                                    child: Icon(LineIcons.plus,
-                                        color: Colors.white),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        width: double.infinity,
-                        height: 60,
-                        decoration: BoxDecoration(
-                            boxShadow: const [
-                              BoxShadow(
-                                  color: ThemeColor.shadow,
-                                  blurRadius: 10,
-                                  spreadRadius: 0.1,
-                                  offset: Offset(0, 10)),
-                            ],
-                            color: ThemeColor.white,
-                            borderRadius: BorderRadius.circular(20)),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 20, right: 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "Select Language",
-                                style: TextStyle(
-                                    fontSize: 17,
-                                    color: ThemeColor.black,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  // buildLanguageDialog(context);
-                                },
-                                child: Container(
-                                  width: 70,
-                                  height: 35,
-                                  decoration: BoxDecoration(
-                                      color: ThemeColor.secondary,
-                                      borderRadius: BorderRadius.circular(20)),
-                                  child: const Center(
-                                    child: Icon(LineIcons.language,
-                                        color: Colors.white),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("Complaints",style: titleStyle,),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                filterButton('Pending'),
+                                filterButton('Ongoing'),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(
@@ -306,7 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           GestureDetector(
                             onTap: () {
                               Navigator.of(context).pushNamed(
-                                  CitizenComplaintsScreen.routeName,
+                                  AllCitizenComplaints.routeName,
                                   arguments: 'all');
                             },
                             child: Container(
@@ -335,7 +270,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     color: ThemeColor.primary,
                                   ),
                                   Text(
-                                    "Citizen Complaints",
+                                    "All Complaints",
                                     style: TextStyle(
                                         fontSize: 17,
                                         color: ThemeColor.black,
@@ -399,6 +334,28 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+    );
+  }
+
+  Widget filterButton(String status) {
+    var deviceSize = MediaQuery.of(context).size;
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed(AllCitizenComplaints.routeName,
+                  arguments: status.toLowerCase());
+            },
+            child: Icon(
+              LineIcons.filter,
+              size: deviceSize.width / 12,
+            ),
+          ),
+          Text(status,style: normalStyle,),
+        ],
+      ),
     );
   }
 }

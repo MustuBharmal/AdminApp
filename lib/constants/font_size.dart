@@ -6,5 +6,5 @@ class FontSize {
   static const large = 18.0;
   static const xLarge = 20.0;
   static const xxLarge = 22.0;
-  static const xxxLarge = 40.0;
+  static const xxxLarge = 30.0;
 }

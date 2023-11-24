@@ -41,7 +41,7 @@ class AppDrawer extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).pushNamed(
                     arguments: 'pending',
-                    CitizenComplaintsScreen.routeName,
+                    AllCitizenComplaints.routeName,
                   );
                 },
               ),
@@ -64,7 +64,7 @@ class AppDrawer extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).pushNamed(
                     arguments: 'resolved',
-                    CitizenComplaintsScreen.routeName,
+                    AllCitizenComplaints.routeName,
                   );
                 },
               ),

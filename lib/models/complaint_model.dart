@@ -9,7 +9,7 @@ class ComplaintModel {
   final String off;
   final String subOff;
   final String probDsc;
-  final String status;
+   String status;
   final String? userId;
   late String imgUrl;
   final String complaintId;

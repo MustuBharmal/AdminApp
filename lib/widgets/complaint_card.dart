@@ -1,36 +1,48 @@
+import 'package:admin/screens/single_complaint_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:provider/provider.dart';
 
 import '../constants/colors.dart';
-import '../screens/citizen_complaint_screen.dart';
-import '../screens/single_complaint_screen.dart';
+import '../providers/admin_provider.dart';
 
-class ComplaintCard extends StatelessWidget {
+class ComplaintCard extends StatefulWidget {
   final String? id;
   final String probName;
   final String probDsc;
   final String off;
   final Timestamp timestamp;
   final String status;
+  final String? uid;
 
-  const ComplaintCard(
-      this.id,
-      this.probName,
-      this.probDsc,
-      this.off,
-      this.timestamp,
-      this.status, {
-        super.key,
-      });
+  const ComplaintCard(this.id, this.probName, this.probDsc, this.off,
+      this.timestamp, this.status, this.uid,
+      {super.key});
 
+  @override
+  State<ComplaintCard> createState() => _ComplaintCardState();
+}
+
+class _ComplaintCardState extends State<ComplaintCard> {
+
+  @override
+  void initState() {
+    Future.delayed(Duration.zero).then(
+          (_) => Provider.of<AdminProvider>(
+        context,
+        listen: false,
+      ).fetchCitizenData(widget.uid),
+    );
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     var deviceSize = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 30),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -50,11 +62,9 @@ class ComplaintCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20)),
               child: InkWell(
                 onTap: () {
-                  // Navigator.of(context).push(
-                  //   MaterialPageRoute(builder: ()=>{
-                  //
-                  //   });
-                  // );
+                  Navigator.of(context).pushNamed(
+                      SingleComplaintScreen.routeName,
+                      arguments: widget.id);
                 },
                 child: SizedBox(
                   width: 70,
@@ -64,7 +74,7 @@ class ComplaintCard extends StatelessWidget {
                     child: Column(
                       children: <Widget>[
                         Text(
-                          probName,
+                          widget.probName,
                           softWrap: false,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -80,7 +90,7 @@ class ComplaintCard extends StatelessWidget {
                           children: [
                             const Icon(LineIcons.calendar),
                             Text(
-                              ' :- ${DateFormat.yMMMMd().format(timestamp.toDate())}',
+                              ' :- ${DateFormat.yMMMMd().format(widget.timestamp.toDate())}',
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
                                 fontSize: 13,
@@ -92,10 +102,9 @@ class ComplaintCard extends StatelessWidget {
                         const SizedBox(
                           height: 6,
                         ),
-
                         Flexible(
                           child: Text(
-                            'Problem Description :- $probDsc',
+                            'Problem Description :- ${widget.probDsc}',
                             overflow: TextOverflow.visible,
                             style: const TextStyle(fontSize: 15),
                           ),
@@ -119,22 +128,21 @@ class ComplaintCard extends StatelessWidget {
                                   textAlign: TextAlign.center,
                                 ),
                                 Text(
-                                  status.toUpperCase(),
+                                  widget.status.toUpperCase(),
                                   style: TextStyle(
                                     fontSize: 18,
-                                    color: status == 'Rejected'
+                                    color: widget.status == 'Rejected'
                                         ? Colors.red
-                                        : status == 'Solved'
-                                        ? Colors.green
-                                        : status == 'In Progress'
-                                        ? Colors.blue
-                                        : status == 'Passed'
-                                        ? Colors.cyan
-                                        : Colors.deepOrange,
+                                        : widget.status == 'Solved'
+                                            ? Colors.green
+                                            : widget.status == 'In Progress'
+                                                ? Colors.blue
+                                                : widget.status == 'Passed'
+                                                    ? Colors.cyan
+                                                    : Colors.deepOrange,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-
                               ],
                             ),
                           ),

@@ -18,7 +18,7 @@ final ThemeData customTheme = ThemeData(
     backgroundColor: ThemeColor.primary,
     titleTextStyle: titleTextStyle,
   ),
-  textTheme:  const TextTheme(
+  textTheme:  TextTheme(
     headlineLarge: headerStyle,
     titleLarge: titleStyle,
     titleMedium: subtitleStyle,
@@ -35,7 +35,7 @@ final ThemeData customTheme = ThemeData(
         ),
       ),
       foregroundColor: MaterialStateProperty.all(Colors.white),
-      backgroundColor: MaterialStateProperty.all(const Color(0xFF698DC5)),
+      backgroundColor: MaterialStateProperty.all(ThemeColor.primary,),
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(

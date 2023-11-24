@@ -5,23 +5,22 @@ import '../models/complaint_model.dart';
 import '../providers/complaint_provider.dart';
 import '../widgets/complaint_card.dart';
 
-class CitizenComplaintsScreen extends StatefulWidget {
-  const CitizenComplaintsScreen({super.key});
+class AllCitizenComplaints extends StatefulWidget {
+  const AllCitizenComplaints({super.key});
 
   static const String routeName = '/list-details-screen';
 
   @override
-  State<StatefulWidget> createState() => _CitizenComplaintsScreenState();
+  State<StatefulWidget> createState() => _AllCitizenComplaintsState();
 }
 
-class _CitizenComplaintsScreenState extends State<CitizenComplaintsScreen> {
+class _AllCitizenComplaintsState extends State<AllCitizenComplaints> {
   bool dataFetched = false;
 
   late List<ComplaintModel> complaintData = [];
   var _isInit = true;
   var _isLoading = false;
   List<ComplaintModel>? selectedEventList = [];
-
   @override
   void didChangeDependencies() {
     if (!dataFetched) {
@@ -76,6 +75,7 @@ class _CitizenComplaintsScreenState extends State<CitizenComplaintsScreen> {
                 complaintData[i].off,
                 complaintData[i].createdAt,
                 complaintData[i].status,
+                complaintData[i].userId,
               ),
               itemCount: complaintData.length,
             ),

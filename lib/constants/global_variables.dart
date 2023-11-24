@@ -26,11 +26,17 @@ const greyBackgroundColor = Color(0xffebecee);
 var selectedNavBarColor = Colors.cyan[800]!;
 const unselectedNavBarColor = Colors.black87;
 
-const headerStyle =
-TextStyle(color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold);
-const titleStyle =
-TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold);
-const subtitleStyle = TextStyle(color: Colors.grey, fontSize: 20);
+TextStyle headerStyle = GoogleFonts.poppins(
+  color: ThemeColor.black,
+  fontSize: FontSize.xxxLarge,
+  fontWeight: FontWeight.w600,
+);
+
+TextStyle subtitleStyle = GoogleFonts.poppins(
+  color: ThemeColor.grey,
+  fontSize: FontSize.xLarge,
+  fontWeight: FontWeight.w400,
+);
 TextStyle normalStyle = GoogleFonts.poppins(
   color: ThemeColor.grey,
   fontSize: FontSize.medium,
@@ -49,6 +55,11 @@ TextStyle hintStyle = GoogleFonts.poppins(
 );
 TextStyle titleTextStyle = GoogleFonts.poppins(
   color: ThemeColor.textFieldBgColor,
+  fontSize: FontSize.xLarge,
+  fontWeight: FontWeight.w500,
+);
+TextStyle titleStyle = GoogleFonts.poppins(
+  color: ThemeColor.black,
   fontSize: FontSize.xLarge,
   fontWeight: FontWeight.w500,
 );
