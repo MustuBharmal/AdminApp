@@ -25,6 +25,7 @@ class _SingleComplaintScreenState extends State<SingleComplaintScreen> {
   var _isInit = true;
   String? selectedStatus;
   bool _isLoading = false;
+  bool rejectionField = false;
   late dynamic loadedData;
   final rejectedReason = TextEditingController();
 
@@ -68,7 +69,7 @@ class _SingleComplaintScreenState extends State<SingleComplaintScreen> {
       'off': loadedData.off,
       'subOff': loadedData.subOff,
       'probDsc': loadedData.probDsc,
-      'status': newValue,
+      'status': newValue.toLowerCase(),
       'userId': loadedData.userId,
       'imgUrl': loadedData.imgUrl,
       'complaintId': loadedData.complaintId,
@@ -192,10 +193,8 @@ class _SingleComplaintScreenState extends State<SingleComplaintScreen> {
                                       onChanged: (String? value) {
                                         setState(() {
                                           selectedStatus = value!;
-                                          loadedData.status =
-                                              selectedStatus!.toLowerCase();
-                                          updateFirestore(loadedData.status);
-                                          print(loadedData.status);
+                                          rejectionField = true;
+                                          updateFirestore(selectedStatus!);
                                         });
                                       },
                                     ),
@@ -257,28 +256,7 @@ class _SingleComplaintScreenState extends State<SingleComplaintScreen> {
                               const SizedBox(
                                 height: 20,
                               ),
-                              if (loadedData.status == 'rejected')
-                                TextFormField(
-                                  controller: rejectedReason,
-                                  maxLines: 3,
-                                  keyboardType: TextInputType.name,
-                                  decoration: const InputDecoration(
-                                    suffixIcon: Icon(LineIcons.forward),
-                                  ),
-                                ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              if (loadedData.status == 'rejected')
-                                if (_isLoading)
-                                  const CircularProgressIndicator()
-                                else
-                                  ElevatedButton(
-                                      onPressed: () async {
-                                        updateFirestore(loadedData.status);
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: const Text('Submit'))
+                              if (rejectionField) rejectionTextField(),
                             ],
                           ),
                         ],
@@ -287,5 +265,29 @@ class _SingleComplaintScreenState extends State<SingleComplaintScreen> {
                   ),
                 ),
     );
+  }
+
+  Widget rejectionTextField() {
+    return Column(
+      children: [
+        TextFormField(
+          controller: rejectedReason,
+          maxLines: 3,
+          keyboardType: TextInputType.name,
+          decoration: const InputDecoration(
+            suffixIcon: Icon(LineIcons.forward),
+          ),
+        ),
+        if (_isLoading) const CircularProgressIndicator() else submitButton(),
+      ],
+    );
+  }
+
+  Widget submitButton() {
+    return ElevatedButton(
+        onPressed: () async {
+          updateFirestore(selectedStatus!);
+        },
+        child: const Text('Submit'));
   }
 }
