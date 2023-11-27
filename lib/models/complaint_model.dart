@@ -9,11 +9,12 @@ class ComplaintModel {
   final String off;
   final String subOff;
   final String probDsc;
-   String status;
+  String status;
   final String? userId;
   late String imgUrl;
   final String complaintId;
   final Timestamp createdAt;
+  String? reason;
 
   ComplaintModel({
     required this.id,
@@ -29,6 +30,7 @@ class ComplaintModel {
     required this.imgUrl,
     required this.complaintId,
     required this.createdAt,
+    this.reason,
   });
 
   toJson() {
@@ -45,6 +47,7 @@ class ComplaintModel {
       'imgUrl': imgUrl,
       'complaintId': complaintId,
       'createdAt': createdAt,
+      'reason': reason,
     };
   }
 
@@ -65,6 +68,7 @@ class ComplaintModel {
       status: data['status'],
       complaintId: data['complaintId'],
       createdAt: data['createdAt'],
+      reason: data['reason'],
     );
   }
 }

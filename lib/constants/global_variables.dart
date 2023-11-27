@@ -63,3 +63,7 @@ TextStyle titleStyle = GoogleFonts.poppins(
   fontSize: FontSize.xLarge,
   fontWeight: FontWeight.w500,
 );
+String pen = '0';
+String on = '0';
+String res = '0';
+String rej = '0';

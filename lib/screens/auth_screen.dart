@@ -1,9 +1,11 @@
 import 'package:admin/providers/admin_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dialogs/dialogs/message_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../constants/colors.dart';
 import '../constants/global_variables.dart';
 import '../models/states_dist_model.dart';
 
@@ -32,46 +34,10 @@ class _AuthScreenState extends State<AuthScreen>
   bool _isLoading = false;
   final _nameController = TextEditingController();
   final _phoneNoController = TextEditingController();
-  late Animation<Size> _heightAnimation;
-  late AnimationController _controller;
-  late Animation<double> _opacityAnimation;
   String selectedState = '';
   String? selectedDist;
   List<StateModel> states = [];
   bool isObscure = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(
-        milliseconds: 300,
-      ),
-      vsync: this,
-    );
-    _heightAnimation = Tween<Size>(
-      begin: const Size(
-        double.infinity,
-        480,
-      ),
-      end: const Size(
-        double.infinity,
-        500,
-      ),
-    ).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.fastOutSlowIn,
-      ),
-    );
-    _heightAnimation.addListener(() => setState(() {}));
-    _opacityAnimation = Tween<double>(begin: 200, end: 320).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: Curves.fastOutSlowIn,
-      ),
-    );
-  }
 
   @override
   void didChangeDependencies() {
@@ -157,34 +123,21 @@ class _AuthScreenState extends State<AuthScreen>
 
   @override
   Widget build(BuildContext context) {
-    var deviceSize = MediaQuery
-        .of(context)
-        .size;
+    var deviceSize = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                margin: const EdgeInsets.only(
-                  top: 30,
-                  // bottom: 20,
-                  right: 20,
-                  left: 20,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(30, 60, 30, 30),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const SizedBox(
+                  height: 20,
                 ),
-                width: 210,
-                child: Image.asset(
-                  "assets/images/admin_app_logo.png",
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              _user == AuthUser.signIn ? signInForm() : signUpForm()
-            ],
+                _user == AuthUser.signIn ? signInForm() : signUpForm()
+              ],
+            ),
           ),
         ),
       ),
@@ -192,165 +145,175 @@ class _AuthScreenState extends State<AuthScreen>
   }
 
   Widget signInForm() {
-    final deviceSize = MediaQuery
-        .of(context)
-        .size;
-    return Card(
-      color: const Color(0xffE0F4FF),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0),
-      ),
-      elevation: 8.0,
-      child: AnimatedBuilder(
-        animation: _heightAnimation,
-        builder: (ctx, ch) =>
-            Container(
-              height: _heightAnimation.value.height,
-              constraints: BoxConstraints(
-                  minHeight: _heightAnimation.value.height),
-              width: deviceSize.width * 0.9,
-              padding: const EdgeInsets.all(16.0),
-              child: ch,
-            ),
-        child: SizedBox(
-          width: deviceSize.width,
-          height: deviceSize.height,
-          child: Form(
-            key: _key,
+    final deviceSize = MediaQuery.of(context).size;
+    return Form(
+      key: _key,
+      child: Column(
+        children: [
+          const SizedBox(height: 40),
+          emailTextField(),
+          const SizedBox(height: 20),
+          passwordTextField(),
+          const SizedBox(height: 20),
+          if (_isLoading) const CircularProgressIndicator() else submitButton(),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _user = AuthUser.signUp;
+              });
+            },
+            child: const Text("Create Account"),
+          ),
+          Align(
+            alignment: Alignment.center,
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  const SizedBox(height: 40),
-                  emailTextField(),
-                  const SizedBox(height: 20),
-                  passwordTextField(),
-                  const SizedBox(height: 20),
-                  if (_isLoading)
-                    const CircularProgressIndicator()
-                  else
-                    submitButton(),
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _user = AuthUser.signUp;
-                      });
-                    },
-                    child: const Text("Create Account"),
-                  ),
-                  TextButton(
-                    onPressed: () {},
-                    child: const Text('Forgot your password?'),
-                  ),
-                ],
+              padding: const EdgeInsets.only(top: 12),
+              child: GestureDetector(
+                onTap: () {
+                  MessageDialog messageDialog = MessageDialog(
+                    dialogBackgroundColor: Colors.white,
+                    buttonOkColor: ThemeColor.primary,
+                    title: 'Forgot password?',
+                    titleColor: Colors.black,
+                    message: 'Contact: adminmustafa@gmail.com',
+                    messageColor: Colors.black,
+                    buttonOkText: 'Ok',
+                    dialogRadius: 30.0,
+                    buttonRadius: 15.0,
+                  );
+                  messageDialog.show(context, barrierColor: Colors.white);
+                },
+                child: Text(
+                  "Forgot password?",
+                  style: normalStyle,
+                ),
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
 
   Widget signUpForm() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Form(
-        key: _key,
-        child: Column(
-          children: [
-            emailTextField(),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                addPadding(
-                  const Icon(
-                    Icons.account_circle,
-                    size: 35,
-                  ),
-                ),
-                Expanded(
-                  child: TextFormField(
-                    validator: (val) {
-                      if (val == null || val.isEmpty) {
-                        return 'Enter your name';
-                      }
-                      return null;
-                    },
-                    controller: _nameController,
-                    keyboardType: TextInputType.name,
-                    decoration: InputDecoration(
-                      suffixIcon: IconButton(
-                          onPressed: () {
-                            _nameController.clear();
-                          },
-                          icon: const Icon(Icons.cancel)),
-                      label: const Text("Name"),
-                      hintText: "Enter the Name",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(21),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                addPadding(
-                  const Icon(
-                    Icons.phone,
-                    size: 35,
-                  ),
-                ),
-                Expanded(
-                  child: TextFormField(
-                    validator: (val) {
-                      if (val == null || val.isEmpty) {
-                        return 'Enter your phone';
-                      }
-                      return null;
-                    },
-                    controller: _phoneNoController,
-                    keyboardType: TextInputType.phone,
-                    decoration: InputDecoration(
-                      suffixIcon: IconButton(
-                          onPressed: () {
-                            _phoneNoController.clear();
-                          },
-                          icon: const Icon(Icons.cancel)),
-                      label: const Text("Phone"),
-                      hintText: "enter the Phone number",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(21),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            stateDropdown(),
-            const SizedBox(height: 20),
-            distDropdown(),
-            const SizedBox(height: 20),
-            passwordTextField(),
-            const SizedBox(height: 20),
-            if (_isLoading)
-              const CircularProgressIndicator()
-            else
-              submitButton(),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _user = AuthUser.signIn;
-                });
-              },
-              child: const Text("Already a user"),
-            ),
-          ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 7),
+          child: Text(
+            "Signup Here",
+            style: normalStyle,
+          ),
         ),
-      ),
+        const SizedBox(
+          height: 30,
+        ),
+        Form(
+          key: _key,
+          child: Column(
+            children: [
+              emailTextField(),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  addPadding(
+                    const Icon(
+                      Icons.account_circle,
+                      size: 35,
+                    ),
+                  ),
+                  Expanded(
+                    child: TextFormField(
+                      validator: (value) {
+                        if (_nameController.text.isEmpty) {
+                          return "This field can't be empty";
+                        }
+                        return null;
+                      },
+                      style: fieldStyle,
+                      textInputAction: TextInputAction.next,
+                      controller: _nameController,
+                      cursorColor: ThemeColor.primary,
+                      keyboardType: TextInputType.name,
+                      decoration: InputDecoration(
+                        fillColor: ThemeColor.textFieldBgColor,
+                        filled: true,
+                        hintText: "Enter the Full Name",
+                        hintStyle: hintStyle,
+                        suffixIcon: IconButton(
+                            onPressed: () {
+                              _nameController.clear();
+                            },
+                            icon: const Icon(Icons.cancel)),
+                        label: const Text("Name"),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  addPadding(
+                    const Icon(
+                      Icons.phone,
+                      size: 35,
+                    ),
+                  ),
+                  Expanded(
+                    child: TextFormField(
+                      validator: (value) {
+                        if (_phoneNoController.text.isEmpty) {
+                          return "This field can't be empty";
+                        }
+                        return null;
+                      },
+                      maxLength: 10,
+                      style: fieldStyle,
+                      textInputAction: TextInputAction.next,
+                      controller: _phoneNoController,
+                      cursorColor: ThemeColor.primary,
+                      keyboardType: TextInputType.phone,
+                      decoration: InputDecoration(
+                        fillColor: ThemeColor.textFieldBgColor,
+                        filled: true,
+                        hintText: "Enter the Phone number",
+                        hintStyle: hintStyle,
+                        suffixIcon: IconButton(
+                            onPressed: () {
+                              _phoneNoController.clear();
+                            },
+                            icon: const Icon(Icons.cancel)),
+                        label: const Text("Phone"),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              stateDropdown(),
+              const SizedBox(height: 20),
+              distDropdown(),
+              const SizedBox(height: 20),
+              passwordTextField(),
+              const SizedBox(height: 20),
+              if (_isLoading)
+                const CircularProgressIndicator()
+              else
+                submitButton(),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _user = AuthUser.signIn;
+                  });
+                },
+                child: const Text("Already a user"),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -366,14 +329,20 @@ class _AuthScreenState extends State<AuthScreen>
         Expanded(
           child: TextFormField(
             validator: (val) {
-              if (val == null || val.isEmpty) {
-                return 'Enter your email';
+              if (_emailController.text.isEmpty) {
+                return "This field can't be empty";
               }
               return null;
             },
+            style: fieldStyle,
             keyboardType: TextInputType.emailAddress,
+            textInputAction: TextInputAction.next,
             controller: _emailController,
+            cursorColor: ThemeColor.primary,
             decoration: InputDecoration(
+              fillColor: ThemeColor.textFieldBgColor,
+              filled: true,
+              hintStyle: hintStyle,
               hintText: 'E-mail',
               suffixIcon: IconButton(
                 icon: const Icon(
@@ -383,12 +352,6 @@ class _AuthScreenState extends State<AuthScreen>
                 onPressed: () {
                   _emailController.clear();
                 },
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(21),
-                borderSide: const BorderSide(
-                  width: 3,
-                ),
               ),
               labelText: 'E-mail',
             ),
@@ -410,26 +373,30 @@ class _AuthScreenState extends State<AuthScreen>
         Expanded(
           child: TextFormField(
             validator: (val) {
-              if (val == null || val.isEmpty || val.length < 6) {
+              if (_passwordController.text.isEmpty ||
+                  _passwordController.text.length < 6) {
                 return 'Enter valid password';
               }
               return null;
             },
             controller: _passwordController,
             obscureText: isObscure,
+            style: fieldStyle,
+            cursorColor: ThemeColor.primary,
             decoration: InputDecoration(
+              fillColor: ThemeColor.textFieldBgColor,
+              filled: true,
+              hintStyle: hintStyle,
+              hintText: "Enter the password",
               suffixIcon: IconButton(
                   onPressed: () {
                     setState(() {
                       isObscure = !isObscure;
                     });
                   },
-                  icon:   Icon(isObscure ? Icons.visibility : Icons.visibility_off)),
+                  icon: Icon(
+                      isObscure ? Icons.visibility_off : Icons.visibility)),
               label: const Text("Password"),
-              hintText: "Enter the password",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(21),
-              ),
             ),
           ),
         ),
@@ -448,21 +415,29 @@ class _AuthScreenState extends State<AuthScreen>
         ),
         Expanded(
           child: DropdownButtonFormField(
-            hint: const Text('Select State'),
+
+            decoration: InputDecoration(
+              fillColor: ThemeColor.textFieldBgColor,
+              filled: true,
+              hintText: ('Select State'),
+              hintStyle: hintStyle,
+            ),
             isExpanded: true,
             onChanged: (selectedValue) {
               setState(() {
                 selectedState = selectedValue!;
-                selectedDist = '';
+                selectedDist = null;
               });
             },
             items: states
                 .map(
-                  (state) =>
-                  DropdownMenuItem<String>(
-                    value: state.name,
-                    child: Text(state.name),
-                  ),
+                  (state) => DropdownMenuItem<String>(
+                value: state.name,
+                child: Text(
+                  state.name,
+                  style: dropdownStyle,
+                ),
+              ),
             )
                 .toList(),
           ),
@@ -482,19 +457,28 @@ class _AuthScreenState extends State<AuthScreen>
         ),
         Expanded(
           child: DropdownButtonFormField<String>(
+            decoration: InputDecoration(
+              fillColor: ThemeColor.textFieldBgColor,
+              filled: true,
+              hintText: "Select your district",
+              hintStyle: hintStyle,
+              label: const Text("Select District"),
+            ),
             isExpanded: true,
-            hint: const Text('Rajkot'),
+            value: selectedDist,
             items: selectedState == ''
                 ? []
                 : states
                 .firstWhere((state) => state.name == selectedState)
                 .dist
                 .map(
-                  (district) =>
-                  DropdownMenuItem<String>(
-                    value: district,
-                    child: Text(district),
-                  ),
+                  (district) => DropdownMenuItem<String>(
+                value: district,
+                child: Text(
+                  district,
+                  style: dropdownStyle,
+                ),
+              ),
             )
                 .toList(),
             onChanged: (value) {
@@ -509,16 +493,13 @@ class _AuthScreenState extends State<AuthScreen>
   }
 
   Widget submitButton() {
-
-
     return ElevatedButton(
       style: ButtonStyle(
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(21),
-            ),
+        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-
+        ),
       ),
       onPressed: _submit,
       child: Text(_user == AuthUser.signIn ? 'Login' : 'Signup'),

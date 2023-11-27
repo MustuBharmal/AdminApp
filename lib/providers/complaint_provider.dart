@@ -14,7 +14,10 @@ class ComplaintProvider with ChangeNotifier {
     final docRef = db.collection('complaints');
     await docRef
         .where('dist',
-            isEqualTo: Provider.of<AdminProvider>(context,listen: false).adminModel!.dist)
+            isEqualTo: Provider.of<AdminProvider>(context, listen: false)
+                .adminModel!
+                .dist)
+        .orderBy('createdAt', descending: true)
         .get()
         .then(
       (ref) {

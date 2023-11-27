@@ -46,6 +46,8 @@ dependencies:
   google_fonts: ^6.1.0
   line_icons: ^2.0.3
   intl: ^0.18.1
+  dialogs: ^0.0.7
+  pie_chart: ^5.4.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

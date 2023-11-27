@@ -26,17 +26,17 @@ class ComplaintCard extends StatefulWidget {
 }
 
 class _ComplaintCardState extends State<ComplaintCard> {
-
   @override
   void initState() {
     Future.delayed(Duration.zero).then(
-          (_) => Provider.of<AdminProvider>(
+      (_) => Provider.of<AdminProvider>(
         context,
         listen: false,
       ).fetchCitizenData(widget.uid),
     );
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     var deviceSize = MediaQuery.of(context).size;
@@ -105,7 +105,7 @@ class _ComplaintCardState extends State<ComplaintCard> {
                         Flexible(
                           child: Text(
                             'Problem Description :- ${widget.probDsc}',
-                            overflow: TextOverflow.visible,
+                            overflow: TextOverflow.ellipsis,
                             style: const TextStyle(fontSize: 15),
                           ),
                         ),
@@ -131,15 +131,13 @@ class _ComplaintCardState extends State<ComplaintCard> {
                                   widget.status.toUpperCase(),
                                   style: TextStyle(
                                     fontSize: 18,
-                                    color: widget.status == 'Rejected'
+                                    color: widget.status == 'rejected'
                                         ? Colors.red
-                                        : widget.status == 'Solved'
+                                        : widget.status == 'resolved'
                                             ? Colors.green
-                                            : widget.status == 'In Progress'
+                                            : widget.status == 'ongoing'
                                                 ? Colors.blue
-                                                : widget.status == 'Passed'
-                                                    ? Colors.cyan
-                                                    : Colors.deepOrange,
+                                                : Colors.orange,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),

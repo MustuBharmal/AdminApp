@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../screens/auth_screen.dart';
 import '../screens/inbox_screen.dart';
+import '../screens/monthly_analysis.dart';
 import '../screens/profile_screen.dart';
 import '../screens/single_complaint_screen.dart';
 
@@ -33,6 +34,11 @@ Route<dynamic> generateRoute(RouteSettings routeSettings) {
       return MaterialPageRoute(
         settings: routeSettings,
         builder: (_) => const SingleComplaintScreen(),
+      );
+    case MonthlyAnalysis.routeName:
+      return MaterialPageRoute(
+        settings: routeSettings,
+        builder: (_) => MonthlyAnalysis(),
       );
     default:
       return MaterialPageRoute(

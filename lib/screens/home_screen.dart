@@ -1,6 +1,7 @@
 import 'package:admin/constants/global_variables.dart';
 import 'package:admin/providers/admin_provider.dart';
 import 'package:admin/screens/all_citizen_complaints.dart';
+import 'package:admin/screens/monthly_analysis.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
@@ -17,23 +18,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Future<String> getNumberOfUsers() async {
-    // String numberOfUsers='N';
-    return '6';
-    // return await dbReference.child('users').once().then(
-    //       (value) {
-    //     var data = value.snapshot.value;
-    //
-    //     String numberOfUsers =
-    //     Map<String, dynamic>.from(data as Map<Object?, Object?>)
-    //         .length
-    //         .toString();
-    //
-    //     return numberOfUsers;
-    //   },
-    // );
-  }
-
   @override
   void initState() {
     super.initState();
@@ -49,14 +33,15 @@ class _HomeScreenState extends State<HomeScreen> {
       // drawer: const AppDrawer(),
       body: Provider.of<AdminProvider>(context).adminModel == null
           ? const Center(child: CircularProgressIndicator())
-          : SafeArea(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(30),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(30),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Column(
@@ -99,262 +84,403 @@ class _HomeScreenState extends State<HomeScreen> {
                           )
                         ],
                       ),
-                      const SizedBox(
-                        height: 30,
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Container(
+                      width: deviceSize.width / 1.2,
+                      height: deviceSize.height / 4.6,
+                      decoration: BoxDecoration(
+                        boxShadow: const [
+                          BoxShadow(
+                              color: ThemeColor.shadow,
+                              blurRadius: 80,
+                              spreadRadius: 0,
+                              offset: Offset(0, 25)),
+                        ],
+                        borderRadius: BorderRadius.circular(25),
+                        color: ThemeColor.primary,
                       ),
-                      Container(
-                        width: deviceSize.width,
-                        height: deviceSize.height / 4.5,
-                        decoration: BoxDecoration(
-                          boxShadow: const [
-                            BoxShadow(
-                                color: ThemeColor.shadow,
-                                blurRadius: 100,
-                                spreadRadius: 5,
-                                offset: Offset(0, 25)),
-                          ],
-                          borderRadius: BorderRadius.circular(30),
-                          color: ThemeColor.primary,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              right: 20,left: 20),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Column(
-                                children: [
-                                  Container(
-                                    width: deviceSize.width / 3.5,
-                                    height: deviceSize.height/5.5,
-                                    decoration: const BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: ThemeColor.secondary),
-                                    child: Center(
-                                      child: StreamBuilder(
-                                        stream: FirebaseFirestore.instance
-                                            .collection('complaints')
-                                            .where(
-                                              'dist',
-                                              isEqualTo:
-                                                  Provider.of<AdminProvider>(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 20, left: 20),
+                        child: Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Column(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).pushNamed(
+                                          arguments: 'pending',
+                                          AllCitizenComplaints.routeName,
+                                        );
+                                      },
+                                      child: Container(
+                                        width: deviceSize.width / 4,
+                                        height: deviceSize.height / 5.7,
+                                        decoration: const BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: ThemeColor.secondary),
+                                        child: Center(
+                                          child: StreamBuilder(
+                                            stream: FirebaseFirestore.instance
+                                                .collection('complaints')
+                                                .where(
+                                                  'dist',
+                                                  isEqualTo: Provider.of<
+                                                              AdminProvider>(
                                                           context)
                                                       .adminModel!
                                                       .dist,
-                                            )
-                                            .where('status', whereIn: [
-                                          'pending',
-                                        ]).snapshots(),
-                                        builder: (BuildContext context,
-                                            AsyncSnapshot passed) {
-                                          if (passed.hasData) {
-                                            return Text(
-                                              passed.data!.docs.length
-                                                  .toString(),
-                                              style: const TextStyle(
-                                                  fontSize: 28,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: ThemeColor.white),
-                                            );
-                                          } else {
-                                            return const CircularProgressIndicator();
-                                          }
-                                        },
+                                                )
+                                                .where('status', whereIn: [
+                                              'pending',
+                                            ]).snapshots(),
+                                            builder: (BuildContext context,
+                                                AsyncSnapshot passed) {
+                                              if (passed.hasData) {
+                                                pen = passed.data!.docs.length
+                                                    .toString();
+                                                return Text(
+                                                  passed.data!.docs.length
+                                                      .toString(),
+                                                  style: const TextStyle(
+                                                      fontSize: 28,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: ThemeColor.white),
+                                                );
+                                              } else {
+                                                return const CircularProgressIndicator();
+                                              }
+                                            },
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  const Text(
-                                    'Pending Complaint',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(width: 20,),
-                              Column(
-                                children: [
-                                  Container(
-                                    width: deviceSize.width / 3.5,
-                                    height: deviceSize.height/5.5,
-                                    decoration: const BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: ThemeColor.secondary),
-                                    child: Center(
-                                      child: StreamBuilder(
-                                        stream: FirebaseFirestore.instance
-                                            .collection('complaints')
-                                            .where(
-                                          'dist',
-                                          isEqualTo:
-                                          Provider.of<AdminProvider>(
-                                              context)
-                                              .adminModel!
-                                              .dist,
-                                        )
-                                            .where('status', whereIn: [
-                                          'resolved',
-                                        ]).snapshots(),
-                                        builder: (BuildContext context,
-                                            AsyncSnapshot passed) {
-                                          if (passed.hasData) {
-                                            return Text(
-                                              passed.data!.docs.length
-                                                  .toString(),
-                                              style: const TextStyle(
-                                                  fontSize: 28,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: ThemeColor.white),
-                                            );
-                                          } else {
-                                            return const CircularProgressIndicator();
-                                          }
-                                        },
+                                    const Text(
+                                      'Pending Complaint',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Column(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).pushNamed(
+                                          arguments: 'resolved',
+                                          AllCitizenComplaints.routeName,
+                                        );
+                                      },
+                                      child: Container(
+                                        width: deviceSize.width / 4,
+                                        height: deviceSize.height / 5.7,
+                                        decoration: const BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: ThemeColor.secondary),
+                                        child: Center(
+                                          child: StreamBuilder(
+                                            stream: FirebaseFirestore.instance
+                                                .collection('complaints')
+                                                .where(
+                                                  'dist',
+                                                  isEqualTo: Provider.of<
+                                                              AdminProvider>(
+                                                          context)
+                                                      .adminModel!
+                                                      .dist,
+                                                )
+                                                .where('status', whereIn: [
+                                              'resolved',
+                                            ]).snapshots(),
+                                            builder: (BuildContext context,
+                                                AsyncSnapshot passed) {
+                                              if (passed.hasData) {
+                                                res = passed.data!.docs.length
+                                                    .toString();
+                                                return Text(
+                                                  passed.data!.docs.length
+                                                      .toString(),
+                                                  style: const TextStyle(
+                                                      fontSize: 28,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: ThemeColor.white),
+                                                );
+                                              } else {
+                                                return const CircularProgressIndicator();
+                                              }
+                                            },
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  const Text(
-                                    'Resolved Complaint',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      Container(
-                        height: 150,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            boxShadow: const [
-                              BoxShadow(
-                                  color: ThemeColor.shadow,
-                                  blurRadius: 10,
-                                  spreadRadius: 0.1,
-                                  offset: Offset(0, 10)),
-                            ],
-                            color: ThemeColor.white,
-                            borderRadius: BorderRadius.circular(20)),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Complaints",
-                              style: titleStyle,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                filterButton('Pending'),
-                                filterButton('Ongoing'),
+                                    const Text(
+                                      'Resolved Complaint',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(
-                        height: 30,
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    Container(
+                      width: deviceSize.width / 1.2,
+                      height: deviceSize.height / 4.6,
+                      decoration: BoxDecoration(
+                        boxShadow: const [
+                          BoxShadow(
+                              color: ThemeColor.shadow,
+                              blurRadius: 80,
+                              spreadRadius: 0,
+                              offset: Offset(0, 25)),
+                        ],
+                        borderRadius: BorderRadius.circular(25),
+                        color: ThemeColor.primary,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).pushNamed(
-                                  AllCitizenComplaints.routeName,
-                                  arguments: 'all');
-                            },
-                            child: Container(
-                              width: (deviceSize.width / 2.5),
-                              height: (deviceSize.width / 2.5),
-                              decoration: BoxDecoration(
-                                  boxShadow: const [
-                                    BoxShadow(
-                                        color: ThemeColor.shadow,
-                                        blurRadius: 10,
-                                        spreadRadius: 0.1,
-                                        offset: Offset(0, 10)),
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 20, left: 20),
+                        child: Column(
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Column(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).pushNamed(
+                                          arguments: 'ongoing',
+                                          AllCitizenComplaints.routeName,
+                                        );
+                                      },
+                                      child: Container(
+                                        width: deviceSize.width / 4,
+                                        height: deviceSize.height / 5.7,
+                                        decoration: const BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: ThemeColor.secondary),
+                                        child: Center(
+                                          child: StreamBuilder(
+                                            stream: FirebaseFirestore.instance
+                                                .collection('complaints')
+                                                .where(
+                                                  'dist',
+                                                  isEqualTo: Provider.of<
+                                                              AdminProvider>(
+                                                          context)
+                                                      .adminModel!
+                                                      .dist,
+                                                )
+                                                .where('status', whereIn: [
+                                              'ongoing',
+                                            ]).snapshots(),
+                                            builder: (BuildContext context,
+                                                AsyncSnapshot passed) {
+                                              if (passed.hasData) {
+                                                on = passed.data!.docs.length
+                                                    .toString();
+                                                return Text(
+                                                  passed.data!.docs.length
+                                                      .toString(),
+                                                  style: const TextStyle(
+                                                      fontSize: 28,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: ThemeColor.white),
+                                                );
+                                              } else {
+                                                return const CircularProgressIndicator();
+                                              }
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const Text(
+                                      'Ongoing Complaint',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
                                   ],
-                                  color: ThemeColor.white,
-                                  borderRadius: BorderRadius.circular(20)),
-                              child: const Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  SizedBox(
-                                    height: 1,
-                                  ),
-                                  Icon(
-                                    LineIcons.chevronCircleRight,
-                                    size: 50,
-                                    color: ThemeColor.primary,
-                                  ),
-                                  Text(
-                                    "All Complaints",
-                                    style: TextStyle(
-                                        fontSize: 17,
-                                        color: ThemeColor.black,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  )
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Column(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).pushNamed(
+                                          arguments: 'rejected',
+                                          AllCitizenComplaints.routeName,
+                                        );
+                                      },
+                                      child: Container(
+                                        width: deviceSize.width / 4,
+                                        height: deviceSize.height / 5.7,
+                                        decoration: const BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: ThemeColor.secondary),
+                                        child: Center(
+                                          child: StreamBuilder(
+                                            stream: FirebaseFirestore.instance
+                                                .collection('complaints')
+                                                .where(
+                                                  'dist',
+                                                  isEqualTo: Provider.of<
+                                                              AdminProvider>(
+                                                          context)
+                                                      .adminModel!
+                                                      .dist,
+                                                )
+                                                .where('status', whereIn: [
+                                              'rejected',
+                                            ]).snapshots(),
+                                            builder: (BuildContext context,
+                                                AsyncSnapshot passed) {
+                                              if (passed.hasData) {
+                                                rej = passed.data!.docs.length
+                                                    .toString();
+                                                return Text(
+                                                  passed.data!.docs.length
+                                                      .toString(),
+                                                  style: const TextStyle(
+                                                      fontSize: 28,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: ThemeColor.white),
+                                                );
+                                              } else {
+                                                return const CircularProgressIndicator();
+                                              }
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const Text(
+                                      'Rejected Complaint',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).pushNamed(
+                                AllCitizenComplaints.routeName,
+                                arguments: 'all');
+                          },
+                          child: Container(
+                            width: (deviceSize.width / 2.5),
+                            height: (deviceSize.width / 2.5),
+                            decoration: BoxDecoration(
+                                boxShadow: const [
+                                  BoxShadow(
+                                      color: ThemeColor.shadow,
+                                      blurRadius: 10,
+                                      spreadRadius: 0.1,
+                                      offset: Offset(0, 10)),
                                 ],
-                              ),
+                                color: ThemeColor.white,
+                                borderRadius: BorderRadius.circular(20)),
+                            child: const Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                SizedBox(
+                                  height: 1,
+                                ),
+                                Icon(
+                                  LineIcons.chevronCircleRight,
+                                  size: 50,
+                                  color: ThemeColor.primary,
+                                ),
+                                Text(
+                                  "All Complaints",
+                                  style: TextStyle(
+                                      fontSize: 17,
+                                      color: ThemeColor.black,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                )
+                              ],
                             ),
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              // Navigator.pushNamed(
-                              //     context, HelpingBot.routeName);
-                            },
-                            child: Container(
-                              width: (deviceSize.width / 2.5),
-                              height: (deviceSize.width / 2.5),
-                              decoration: BoxDecoration(
-                                  boxShadow: const [
-                                    BoxShadow(
-                                        color: ThemeColor.shadow,
-                                        blurRadius: 10,
-                                        spreadRadius: 0.1,
-                                        offset: Offset(0, 10)),
-                                  ],
-                                  color: ThemeColor.white,
-                                  borderRadius: BorderRadius.circular(20)),
-                              child: const Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  SizedBox(
-                                    height: 1,
-                                  ),
-                                  Icon(
-                                    LineIcons.question,
-                                    size: 50,
-                                    color: ThemeColor.primary,
-                                  ),
-                                  Text(
-                                    "Helping Bot",
-                                    style: TextStyle(
-                                        fontSize: 17,
-                                        color: ThemeColor.black,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  )
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, MonthlyAnalysis.routeName);
+                          },
+                          child: Container(
+                            width: (deviceSize.width / 2.5),
+                            height: (deviceSize.width / 2.5),
+                            decoration: BoxDecoration(
+                                boxShadow: const [
+                                  BoxShadow(
+                                      color: ThemeColor.shadow,
+                                      blurRadius: 10,
+                                      spreadRadius: 0.1,
+                                      offset: Offset(0, 10)),
                                 ],
-                              ),
+                                color: ThemeColor.white,
+                                borderRadius: BorderRadius.circular(20)),
+                            child: const Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                SizedBox(
+                                  height: 1,
+                                ),
+                                Icon(
+                                  Icons.report_outlined,
+                                  size: 50,
+                                  color: ThemeColor.primary,
+                                ),
+                                Text(
+                                  " Analysis ",
+                                  style: TextStyle(
+                                      fontSize: 17,
+                                      color: ThemeColor.black,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                )
+                              ],
                             ),
-                          )
-                        ],
-                      )
-                    ],
-                  ),
+                          ),
+                        )
+                      ],
+                    )
+                  ],
                 ),
               ),
             ),
@@ -386,3 +512,34 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+// Container(
+// height: 150,
+// width: double.infinity,
+// decoration: BoxDecoration(
+// boxShadow: const [
+// BoxShadow(
+// color: ThemeColor.shadow,
+// blurRadius: 10,
+// spreadRadius: 0.1,
+// offset: Offset(0, 10)),
+// ],
+// color: ThemeColor.white,
+// borderRadius: BorderRadius.circular(20)),
+// child: Column(
+// mainAxisAlignment: MainAxisAlignment.center,
+// children: [
+// Text(
+// "Complaints",
+// style: titleStyle,
+// ),
+// Row(
+// mainAxisAlignment: MainAxisAlignment.center,
+// crossAxisAlignment: CrossAxisAlignment.center,
+// children: [
+// filterButton('Pending'),
+// filterButton('Ongoing'),
+// ],
+// ),
+// ],
+// ),
+// ),

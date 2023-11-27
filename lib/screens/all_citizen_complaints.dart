@@ -57,7 +57,7 @@ class _AllCitizenComplaintsState extends State<AllCitizenComplaints> {
       )
           : RefreshIndicator(
         onRefresh: () async{
-          Provider.of<ComplaintProvider>(context,listen: false).fetchComplaintData(context);
+          Provider.of<ComplaintProvider>(context, listen: false).fetchComplaintData(context);
         },
         child: Stack(
           children: [
